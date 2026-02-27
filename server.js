@@ -6,7 +6,7 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY || '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';
+const GROQ_API_KEY = process.env.GROQ_API_KEY || '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';
 
 const USERS = {
   pilgrim: 'pilgrim123',
@@ -979,20 +979,27 @@ app.get('/api/ai/horoscope/:rashi', async (req, res) => {
   }
   const dayName = dateStr.split(',')[0] || '';
   const religion = req.query.religion || '';
-  const religionScope = religion ? `Focus all recommendations on ${religion} tradition — recommend only ${religion} sacred places, ${religion} prayers, and ${religion} deities/figures.` : 'Include sacred places from any religion.';
-  const prompt = `Generate a detailed spiritual horoscope for "${rashi}" rashi (zodiac) specifically for the date: ${dateStr}.
-Consider the day of the week (${dayName}) and any festivals or auspicious events on this date. ${religionScope}
-Return ONLY a JSON object:
-{"rashi":"${rashi}","date":"${dateStr}","daySignificance":"What makes this day special spiritually (festivals, tithi, etc.)","prediction":"4-5 sentence spiritual prediction specific to this date","luckyTemple":"A ${religion || 'sacred'} place to visit on this day for good fortune","luckyDeity":"Deity/figure to pray to on this day","luckyColor":"Lucky color","luckyNumber":"Lucky number","mantra":"A short ${religion || ''} prayer/mantra for this day","templeRecommendation":"Why this specific place is lucky on this date","overallRating":4,"advice":"One line of spiritual advice for this day","doOnThisDay":["3 things to do on this day"],"avoidOnThisDay":["2 things to avoid on this day"]}
-overallRating is 1-5 stars. No markdown, just JSON.`;
+  const religionScope = religion ? `Focus on ${religion} tradition only.` : '';
+  const prompt = `Generate a spiritual horoscope for "${rashi}" rashi (zodiac) for ${dateStr}. ${religionScope}
+Return ONLY a valid JSON object (single line, no newlines inside):
+{"rashi":"${rashi}","date":"${dateStr}","prediction":"3-4 sentence spiritual prediction","luckyTemple":"A ${religion || 'sacred'} place to visit","luckyDeity":"Deity to pray to","luckyColor":"color","luckyNumber":"number","mantra":"A short prayer/mantra","templeRecommendation":"Why this place is lucky","overallRating":4,"advice":"One line of advice","daySignificance":"What makes this day special","doOnThisDay":"3 things to do (comma separated)","avoidOnThisDay":"2 things to avoid (comma separated)"}
+overallRating is 1-5. All values must be strings (no arrays). No markdown, just JSON.`;
   try {
-    const raw = await callGroqLLM(prompt, rashi, 600);
+    const raw = await callGroqLLM(prompt, rashi, 500);
     let data = {};
     try {
       let cleaned = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim().replace(/[\r\n]+/g, ' ');
-      const m = cleaned.match(/\{.*\}/);
+      const m = cleaned.match(/\{[\s\S]*\}/);
       data = m ? JSON.parse(m[0]) : {};
     } catch {}
+    if (data.doOnThisDay && typeof data.doOnThisDay === 'string') {
+      data.doOnThisDay = data.doOnThisDay.split(/[,;]/).map(s => s.trim()).filter(Boolean);
+    }
+    if (data.avoidOnThisDay && typeof data.avoidOnThisDay === 'string') {
+      data.avoidOnThisDay = data.avoidOnThisDay.split(/[,;]/).map(s => s.trim()).filter(Boolean);
+    }
+    if (!Array.isArray(data.doOnThisDay)) data.doOnThisDay = [];
+    if (!Array.isArray(data.avoidOnThisDay)) data.avoidOnThisDay = [];
     data.source = 'ai';
     res.json(data);
   } catch (err) {
