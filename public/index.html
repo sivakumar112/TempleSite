@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sacred Places Hub - AI-Powered Multi-Faith Pilgrim Guide</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+  <!-- Real-time LLM Alert Ticker -->
+  <div class="alert-ticker" id="alert-ticker">
+    <div class="ticker-wrap" id="ticker-content">
+      <span class="ticker-item"><i class="fas fa-spinner fa-spin"></i> Loading spiritual alerts from AI...</span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo"><i class="fas fa-place-of-worship"></i> Sacred Places Hub</a>
+      <nav class="main-nav">
+        <a href="#home" class="nav-link active" data-page="home">Home</a>
+        <a href="#temples" class="nav-link" data-page="temples">Temples</a>
+        <a href="#explore" class="nav-link" data-page="explore">Explore</a>
+        <a href="#map" class="nav-link" data-page="map"><i class="fas fa-map"></i> Map</a>
+        <a href="#planner" class="nav-link" data-page="planner">Planner</a>
+        <a href="#wish" class="nav-link" data-page="wish">Wish Guide</a>
+        <a href="#horoscope" class="nav-link" data-page="horoscope">Horoscope</a>
+        <a href="#compare" class="nav-link" data-page="compare">Compare</a>
+        <a href="#festivals" class="nav-link" data-page="festivals">Festivals</a>
+        <a href="#ai-guide" class="nav-link" data-page="ai-guide">AI Guide</a>
+      </nav>
+      <div class="header-right">
+        <div class="religion-selector-wrap">
+          <select id="global-religion" class="global-religion-select" title="Filter entire site by religion">
+            <option value="">🙏 All Religions</option>
+            <option value="Hindu">🕉️ Hindu</option>
+            <option value="Islam">🕌 Islam</option>
+            <option value="Christian">⛪ Christian</option>
+            <option value="Sikh">🪯 Sikh</option>
+            <option value="Buddhist">☸️ Buddhist</option>
+            <option value="Jain">🙏 Jain</option>
+          </select>
+        </div>
+        <button id="theme-toggle" class="btn-icon" title="Toggle light/dark theme"><i class="fas fa-moon"></i></button>
+        <div id="google_translate_element" class="translate-widget"></div>
+        <div id="auth-buttons">
+          <button id="btn-login" class="btn btn-outline">Log In</button>
+          <span id="user-name" class="user-name hidden"></span>
+          <button id="btn-logout" class="btn btn-outline hidden">Log Out</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Login modal -->
+  <div id="login-modal" class="modal hidden">
+    <div class="modal-content">
+      <button class="modal-close" id="login-close">&times;</button>
+      <h2><i class="fas fa-user-circle"></i> Log In</h2>
+      <form id="login-form">
+        <input type="text" id="login-username" placeholder="Username" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+      <p class="login-hint">Try: pilgrim / pilgrim123 or admin / admin123</p>
+      <div class="divider">or</div>
+      <div id="google-signin-btn"></div>
+    </div>
+  </div>
+
+  <main class="main-content">
+
+    <!-- ─── Home ─────────────────────────────────────────── -->
+    <section id="section-home" class="section active">
+      <div class="hero">
+        <h1><i class="fas fa-place-of-worship"></i> Discover Sacred Places. Plan Your Divine Journey.</h1>
+        <p class="hero-sub">Temples, Mosques, Churches, Gurudwaras & more — AI-powered search, trip planning & multilingual pilgrim guide for ALL religions</p>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Search any sacred place — temple, mosque, church, gurudwara...">
+          <button id="voice-search-btn" class="btn-icon voice-btn" title="Voice search"><i class="fas fa-microphone"></i></button>
+          <button id="search-btn" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-bar" id="stats-bar">
+        <div class="stat-card reveal"><div class="stat-number" id="stat-temples" data-count="100">0</div><div class="stat-label">Sacred Places</div></div>
+        <div class="stat-card reveal"><div class="stat-number" data-count="6">0</div><div class="stat-label">Religions</div></div>
+        <div class="stat-card reveal"><div class="stat-number" data-count="11">0</div><div class="stat-label">Languages</div></div>
+        <div class="stat-card reveal"><div class="stat-number" data-count="20">0</div><div class="stat-label">AI Features</div></div>
+        <div class="stat-card reveal"><div class="stat-number" id="stat-llm">Groq</div><div class="stat-label">Llama 3.3 70B</div></div>
+      </div>
+
+      <!-- Temple of the Day -->
+      <div class="temple-of-day" id="temple-of-day">
+        <div class="tod-image" id="tod-image">
+          <i class="fas fa-gopuram"></i>
+          <span class="tod-badge"><i class="fas fa-star"></i> Sacred Place of the Day</span>
+        </div>
+        <div class="tod-content" id="tod-content">
+          <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading Temple of the Day...</div>
+        </div>
+      </div>
+
+      <!-- Mantra of the Day -->
+      <div class="mantra-section" id="mantra-section">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading today's mantra...</div>
+      </div>
+
+      <!-- Panchang -->
+      <div class="panchang-card" id="panchang-card">
+        <h3><i class="fas fa-moon"></i> Today's Panchang</h3>
+        <div class="panchang-grid" id="panchang-grid">
+          <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading panchang...</div>
+        </div>
+      </div>
+
+      <!-- AI Quick Recommendations -->
+      <div class="home-ai-section">
+        <h2><i class="fas fa-robot"></i> AI Recommendations</h2>
+        <p class="section-desc">Get personalized sacred place suggestions powered by Groq LLM (Llama 3.3 70B) — all religions</p>
+        <div class="quick-recommend-form">
+          <select id="rec-region">
+            <option value="">Any Region</option>
+            <option value="South India">South India</option>
+            <option value="North India">North India</option>
+            <option value="West India">West India</option>
+            <option value="East India">East India</option>
+          </select>
+          <select id="rec-deity">
+            <option value="">Any Religion</option>
+            <option value="Hindu temples">Hindu</option>
+            <option value="Mosques and Islamic sites">Islam</option>
+            <option value="Churches">Christian</option>
+            <option value="Gurudwaras">Sikh</option>
+            <option value="Buddhist sites">Buddhist</option>
+            <option value="Jain temples">Jain</option>
+          </select>
+          <select id="rec-season">
+            <option value="">Any Season</option>
+            <option value="October to March (winter)">Winter (Oct-Mar)</option>
+            <option value="April to June (summer)">Summer (Apr-Jun)</option>
+            <option value="July to September (monsoon)">Monsoon (Jul-Sep)</option>
+          </select>
+          <button id="rec-btn" class="btn btn-primary"><i class="fas fa-magic"></i> Get Recommendations</button>
+        </div>
+        <div id="rec-results" class="rec-results hidden"></div>
+      </div>
+
+      <!-- Did You Know -->
+      <div class="dyk-section">
+        <h2><i class="fas fa-lightbulb"></i> Did You Know?</h2>
+        <div class="dyk-cards" id="dyk-cards">
+          <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading fascinating facts...</div>
+        </div>
+      </div>
+
+      <!-- Featured Temples -->
+      <div class="featured-temples">
+        <h2><i class="fas fa-star"></i> Featured Temples</h2>
+        <div class="temple-grid" id="home-temple-grid"></div>
+      </div>
+    </section>
+
+    <!-- ─── All Temples ──────────────────────────────────── -->
+    <section id="section-temples" class="section">
+      <h2><i class="fas fa-place-of-worship"></i> All Sacred Places</h2>
+      <p class="section-desc">Search our database or let AI find any temple, mosque, church, or gurudwara in India</p>
+      <div class="filters">
+        <input type="text" id="filter-name" placeholder="Name...">
+        <input type="text" id="filter-location" placeholder="Location...">
+        <input type="text" id="filter-deity" placeholder="Deity / Figure...">
+        <select id="filter-religion">
+          <option value="">All Religions</option>
+          <option value="Hindu">Hindu</option>
+          <option value="Islam">Islam</option>
+          <option value="Christian">Christian</option>
+          <option value="Sikh">Sikh</option>
+          <option value="Buddhist">Buddhist</option>
+          <option value="Jain">Jain</option>
+        </select>
+        <button id="filter-btn" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+      </div>
+      <div class="temple-grid" id="temples-grid"></div>
+    </section>
+
+    <!-- ─── Explore City ─────────────────────────────────── -->
+    <section id="section-explore" class="section">
+      <h2><i class="fas fa-map-marked-alt"></i> Explore Sacred Places by City</h2>
+      <p class="section-desc">Discover temples, mosques, churches & gurudwaras in any Indian city. Uses OpenStreetMap + AI for complete coverage.</p>
+      <div class="explore-search">
+        <input type="text" id="explore-city" placeholder="Enter city name (e.g. Delhi, Mumbai, Varanasi, Hyderabad)...">
+        <button id="explore-btn" class="btn btn-primary"><i class="fas fa-compass"></i> Explore</button>
+      </div>
+      <div id="explore-status" class="explore-status hidden"></div>
+      <div class="temple-grid" id="explore-grid"></div>
+    </section>
+
+    <!-- ─── Pilgrimage Planner (Enhanced) ────────────────── -->
+    <section id="section-planner" class="section">
+      <h2><i class="fas fa-route"></i> AI Pilgrimage Planner</h2>
+      <p class="section-desc">Plan visits to temples, mosques, churches, gurudwaras & more — with timings, food, local phrases, budget & travel tips</p>
+      <div class="planner-form" id="planner-form">
+        <div class="form-group">
+          <label>Starting City</label>
+          <input type="text" id="planner-city" placeholder="e.g. Chennai, Delhi, Mumbai">
+        </div>
+        <div class="form-group">
+          <label>Number of Days</label>
+          <select id="planner-days">
+            <option value="2">2 Days</option>
+            <option value="3" selected>3 Days</option>
+            <option value="5">5 Days</option>
+            <option value="7">7 Days</option>
+            <option value="10">10 Days</option>
+            <option value="14">14 Days</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Region</label>
+          <select id="planner-region">
+            <option value="">Any Region</option>
+            <option value="South India">South India</option>
+            <option value="North India">North India</option>
+            <option value="West India">West India</option>
+            <option value="East India">East India</option>
+            <option value="Central India">Central India</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Religion / Focus</label>
+          <select id="planner-deity">
+            <option value="">All Religions</option>
+            <option value="Hindu temples">Hindu Temples</option>
+            <option value="Mosques and Islamic sites">Mosques (Islam)</option>
+            <option value="Churches and Christian sites">Churches (Christian)</option>
+            <option value="Gurudwaras and Sikh sites">Gurudwaras (Sikh)</option>
+            <option value="Buddhist monasteries">Buddhist Sites</option>
+            <option value="Jain temples">Jain Temples</option>
+            <option value="Multi-faith sacred places">Multi-Faith Mix</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Travel Style</label>
+          <select id="planner-style">
+            <option value="budget">Budget</option>
+            <option value="comfortable" selected>Comfortable</option>
+            <option value="luxury">Luxury</option>
+          </select>
+        </div>
+        <div class="form-group" style="display:flex;align-items:flex-end">
+          <button id="planner-btn" class="btn btn-glow" style="width:100%"><i class="fas fa-map"></i> Generate Itinerary</button>
+        </div>
+      </div>
+      <p class="section-desc" style="margin-top:0.5rem;font-size:0.82rem"><i class="fas fa-lightbulb" style="color:var(--accent)"></i> For a personalized plan, use the <strong>AI Guide → Plan My Temple Trip</strong> chat agent which asks detailed questions.</p>
+      <div id="planner-result" class="planner-result"></div>
+    </section>
+
+    <!-- ─── Wish / Prayer Guide ──────────────────────────── -->
+    <section id="section-wish" class="section">
+      <h2><i class="fas fa-pray"></i> Prayer & Wish Guide</h2>
+      <p class="section-desc">Tell us your wish or prayer and our AI will recommend sacred places from ALL religions, rituals, prayers & offerings</p>
+      <div class="wish-form">
+        <input type="text" id="wish-input" placeholder="e.g. Career success, Good health, Marriage, Child blessing, Peace of mind...">
+        <button id="wish-btn" class="btn btn-glow"><i class="fas fa-pray"></i> Find Temples & Rituals</button>
+      </div>
+      <div class="wish-suggestions">
+        <button class="btn btn-outline wish-quick" data-wish="Career success and job promotion">Career Success</button>
+        <button class="btn btn-outline wish-quick" data-wish="Good health and recovery from illness">Good Health</button>
+        <button class="btn btn-outline wish-quick" data-wish="Finding a good life partner and marriage">Marriage</button>
+        <button class="btn btn-outline wish-quick" data-wish="Child blessing and fertility">Child Blessing</button>
+        <button class="btn btn-outline wish-quick" data-wish="Peace of mind and relief from stress">Peace of Mind</button>
+        <button class="btn btn-outline wish-quick" data-wish="Financial prosperity and wealth">Wealth & Prosperity</button>
+        <button class="btn btn-outline wish-quick" data-wish="Success in education and exams">Education Success</button>
+        <button class="btn btn-outline wish-quick" data-wish="Protection from evil and negative energy">Protection</button>
+      </div>
+      <div id="wish-result"></div>
+    </section>
+
+    <!-- ─── Interactive Map ─────────────────────────────── -->
+    <section id="section-map" class="section">
+      <h2><i class="fas fa-map-marked-alt"></i> Interactive Sacred Places Map</h2>
+      <p class="section-desc">Explore famous sacred places across all religions in India on an interactive OpenStreetMap-powered map</p>
+      <div class="map-search-bar">
+        <i class="fas fa-search map-search-icon"></i>
+        <input type="text" id="map-search-input" placeholder="Search any temple, mosque, church, gurudwara... (e.g. Jama Masjid Delhi)">
+        <button id="map-search-btn" class="btn btn-primary"><i class="fas fa-map-marker-alt"></i> Locate</button>
+      </div>
+      <div class="map-controls">
+        <button class="btn btn-outline map-filter active" data-filter="all">All Places</button>
+        <button class="btn btn-outline map-filter" data-filter="Hindu"><i class="fas fa-om"></i> Hindu</button>
+        <button class="btn btn-outline map-filter" data-filter="Islam"><i class="fas fa-mosque"></i> Islam</button>
+        <button class="btn btn-outline map-filter" data-filter="Christian"><i class="fas fa-church"></i> Christian</button>
+        <button class="btn btn-outline map-filter" data-filter="Sikh"><i class="fas fa-khanda"></i> Sikh</button>
+        <button class="btn btn-outline map-filter" data-filter="Buddhist"><i class="fas fa-dharmachakra"></i> Buddhist</button>
+        <button class="btn btn-outline map-filter" data-filter="Jain">Jain</button>
+      </div>
+      <div id="temple-map" class="temple-map"></div>
+      <div id="map-info" class="map-info hidden"></div>
+    </section>
+
+    <!-- ─── Horoscope / Rashi Guide ──────────────────────── -->
+    <section id="section-horoscope" class="section">
+      <h2><i class="fas fa-star-of-life"></i> Daily Spiritual Horoscope</h2>
+      <p class="section-desc">Get your daily sacred place recommendation based on your zodiac sign — powered by AI</p>
+      <div class="horoscope-date-picker">
+        <div class="date-picker-row">
+          <button class="btn btn-outline date-nav" id="horoscope-prev"><i class="fas fa-chevron-left"></i></button>
+          <div class="date-display">
+            <input type="date" id="horoscope-date" class="date-input">
+            <span id="horoscope-date-label" class="date-label"></span>
+          </div>
+          <button class="btn btn-outline date-nav" id="horoscope-next"><i class="fas fa-chevron-right"></i></button>
+          <button class="btn btn-outline" id="horoscope-today"><i class="fas fa-calendar-day"></i> Today</button>
+        </div>
+      </div>
+      <div class="rashi-grid">
+        <button class="rashi-card" data-rashi="Mesh (Aries)"><div class="rashi-symbol">&#9800;</div><div class="rashi-name">Mesh</div><div class="rashi-eng">Aries</div></button>
+        <button class="rashi-card" data-rashi="Vrishabh (Taurus)"><div class="rashi-symbol">&#9801;</div><div class="rashi-name">Vrishabh</div><div class="rashi-eng">Taurus</div></button>
+        <button class="rashi-card" data-rashi="Mithun (Gemini)"><div class="rashi-symbol">&#9802;</div><div class="rashi-name">Mithun</div><div class="rashi-eng">Gemini</div></button>
+        <button class="rashi-card" data-rashi="Kark (Cancer)"><div class="rashi-symbol">&#9803;</div><div class="rashi-name">Kark</div><div class="rashi-eng">Cancer</div></button>
+        <button class="rashi-card" data-rashi="Simha (Leo)"><div class="rashi-symbol">&#9804;</div><div class="rashi-name">Simha</div><div class="rashi-eng">Leo</div></button>
+        <button class="rashi-card" data-rashi="Kanya (Virgo)"><div class="rashi-symbol">&#9805;</div><div class="rashi-name">Kanya</div><div class="rashi-eng">Virgo</div></button>
+        <button class="rashi-card" data-rashi="Tula (Libra)"><div class="rashi-symbol">&#9806;</div><div class="rashi-name">Tula</div><div class="rashi-eng">Libra</div></button>
+        <button class="rashi-card" data-rashi="Vrishchik (Scorpio)"><div class="rashi-symbol">&#9807;</div><div class="rashi-name">Vrishchik</div><div class="rashi-eng">Scorpio</div></button>
+        <button class="rashi-card" data-rashi="Dhanu (Sagittarius)"><div class="rashi-symbol">&#9808;</div><div class="rashi-name">Dhanu</div><div class="rashi-eng">Sagittarius</div></button>
+        <button class="rashi-card" data-rashi="Makar (Capricorn)"><div class="rashi-symbol">&#9809;</div><div class="rashi-name">Makar</div><div class="rashi-eng">Capricorn</div></button>
+        <button class="rashi-card" data-rashi="Kumbh (Aquarius)"><div class="rashi-symbol">&#9810;</div><div class="rashi-name">Kumbh</div><div class="rashi-eng">Aquarius</div></button>
+        <button class="rashi-card" data-rashi="Meen (Pisces)"><div class="rashi-symbol">&#9811;</div><div class="rashi-name">Meen</div><div class="rashi-eng">Pisces</div></button>
+      </div>
+      <div id="horoscope-result" class="horoscope-result"></div>
+    </section>
+
+    <!-- ─── Temple Comparison ────────────────────────────── -->
+    <section id="section-compare" class="section">
+      <h2><i class="fas fa-balance-scale"></i> Sacred Place Comparison</h2>
+      <p class="section-desc">Compare any two sacred places side-by-side — temples, mosques, churches, gurudwaras</p>
+      <div class="compare-form">
+        <input type="text" id="compare-temple1" placeholder="Place 1 (e.g. Jama Masjid Delhi)">
+        <span class="compare-vs">VS</span>
+        <input type="text" id="compare-temple2" placeholder="Place 2 (e.g. St. Paul's Cathedral)">
+        <button id="compare-btn" class="btn btn-primary"><i class="fas fa-balance-scale"></i> Compare</button>
+      </div>
+      <div id="compare-result" class="compare-result"></div>
+    </section>
+
+    <!-- ─── Temple Detail ────────────────────────────────── -->
+    <section id="section-temple-detail" class="section">
+      <div class="detail-top-bar">
+        <button id="back-from-detail" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</button>
+        <div class="detail-actions" id="detail-actions"></div>
+      </div>
+      <div id="temple-detail-content"></div>
+
+      <!-- Temple Story -->
+      <div id="temple-story-section" class="story-section hidden"></div>
+
+      <!-- Nearby Essentials -->
+      <div id="temple-nearby-section" class="nearby-section hidden"></div>
+
+      <!-- Aarti / Bhajan -->
+      <div id="temple-aarti-section" class="aarti-section hidden"></div>
+
+      <div id="wiki-section" class="detail-block hidden">
+        <h4><i class="fas fa-book"></i> From Wikipedia</h4>
+        <div id="wiki-content"></div>
+        <a id="wiki-link" href="#" target="_blank" class="btn btn-outline wiki-link hidden">Read more on Wikipedia</a>
+      </div>
+      <div class="virtual-tour" id="virtual-tour">
+        <h3><i class="fas fa-images"></i> Virtual Temple Tour</h3>
+        <p class="section-desc">Images from Wikimedia Commons (open source)</p>
+        <div class="gallery" id="temple-gallery"></div>
+      </div>
+    </section>
+
+    <!-- ─── Favorites ────────────────────────────────────── -->
+    <section id="section-favorites" class="section">
+      <h2><i class="fas fa-heart"></i> My Favorites</h2>
+      <p class="section-desc">Sacred places you've bookmarked. Stored locally in your browser.</p>
+      <div class="temple-grid" id="favorites-grid">
+        <p class="text-muted">No favorites yet. Click the <i class="fas fa-heart"></i> button on any temple to bookmark it!</p>
+      </div>
+    </section>
+
+    <!-- ─── Festivals ────────────────────────────────────── -->
+    <section id="section-festivals" class="section">
+      <h2><i class="fas fa-calendar-alt"></i> Festival & Ritual Calendar</h2>
+      <p class="section-desc">Festivals from ALL religions — Hindu, Islam, Christian, Sikh, Buddhist & Jain</p>
+      <div class="festival-list" id="festival-list"></div>
+    </section>
+
+    <!-- ─── AI Guide ─────────────────────────────────────── -->
+    <section id="section-ai-guide" class="section">
+      <h2><i class="fas fa-robot"></i> AI Pilgrim Guide</h2>
+      <p class="section-desc">Chat with our AI for temple recommendations, ritual explanations, dress codes, or pilgrimage tips. Powered by Groq LLM (Llama 3.3 70B).</p>
+
+      <div class="ai-quick-btns">
+        <button class="btn btn-glow" id="start-trip-planner"><i class="fas fa-route"></i> Plan My Temple Trip</button>
+        <button class="btn btn-glow" id="start-quiz" style="background:linear-gradient(135deg,#58a6ff,#3b82f6)"><i class="fas fa-brain"></i> Temple Quiz</button>
+        <button class="btn btn-outline ai-quick" data-q="What are the 12 Jyotirlingas and their locations?">12 Jyotirlingas</button>
+        <button class="btn btn-outline ai-quick" data-q="Tell me about the most famous mosques in India">Famous Mosques</button>
+        <button class="btn btn-outline ai-quick" data-q="What are the oldest and most significant churches in India?">Historic Churches</button>
+        <button class="btn btn-outline ai-quick" data-q="Tell me about the 5 Takhts (thrones) of Sikhism">5 Sikh Takhts</button>
+        <button class="btn btn-outline ai-quick" data-q="What are the major Buddhist pilgrimage sites in India?">Buddhist Sites</button>
+        <button class="btn btn-outline ai-quick" data-q="Explain the significance of Ramadan and Eid celebrations in India">Ramadan & Eid</button>
+        <button class="btn btn-outline ai-quick" data-q="Suggest a multi-faith pilgrimage covering temples, mosques, and churches">Multi-Faith Tour</button>
+        <button class="btn btn-outline ai-quick" data-q="Compare sacred architecture styles across religions in India">Architecture Styles</button>
+      </div>
+
+      <div class="ai-chat">
+        <div class="ai-messages" id="ai-messages">
+          <div class="ai-message bot">
+            <div class="role"><i class="fas fa-robot"></i> AI Guide</div>
+            <div class="ai-body">Namaste! I'm your AI Pilgrim Guide, powered by Groq LLM. Ask me anything about temples, rituals, festivals, dress codes, or get personalized pilgrimage recommendations. I have deep knowledge of all major temples in India.</div>
+          </div>
+        </div>
+        <div class="ai-input-row">
+          <input type="text" id="ai-input" placeholder="Ask about temples, rituals, recommendations...">
+          <button id="ai-send" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Ask</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast Notifications -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Back to Top -->
+  <button id="back-to-top" class="back-to-top hidden"><i class="fas fa-chevron-up"></i></button>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="#home"><i class="fas fa-home"></i> Home</a>
+      <a href="#temples"><i class="fas fa-place-of-worship"></i> Temples</a>
+      <a href="#map"><i class="fas fa-map"></i> Map</a>
+      <a href="#planner"><i class="fas fa-route"></i> Planner</a>
+      <a href="#wish"><i class="fas fa-pray"></i> Wish Guide</a>
+      <a href="#horoscope"><i class="fas fa-star-of-life"></i> Horoscope</a>
+      <a href="#compare"><i class="fas fa-balance-scale"></i> Compare</a>
+      <a href="#favorites"><i class="fas fa-heart"></i> Favorites</a>
+      <a href="#ai-guide"><i class="fas fa-robot"></i> AI Guide</a>
+    </div>
+    <p>Sacred Places Hub — Powered by <strong>Groq LLM (Llama 3.3 70B)</strong>, <strong>OpenStreetMap + Leaflet</strong>, <strong>Wikipedia</strong> & <strong>Wikimedia Commons</strong></p>
+    <p style="margin-top:0.5rem;font-size:0.8rem;">Built with <i class="fas fa-heart" style="color:var(--accent)"></i> for pilgrims worldwide. <strong>6 Religions</strong> | <strong>20+ AI features</strong> | <strong>Voice search</strong> | <strong>Interactive maps</strong> | <strong>11 languages</strong></p>
+  </footer>
+
+  <script>
+    function googleTranslateElementInit() {
+      if (typeof google !== 'undefined' && google.translate) {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'en,hi,ta,te,kn,ml,bn,mr,gu,pa,ur',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+      }
+    }
+  </script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/ai.js"></script>
+</body>
+</html>

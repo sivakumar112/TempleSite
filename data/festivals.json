@@ -1,0 +1,110 @@
+[
+  {
+    "id": "maha-shivaratri",
+    "name": "Maha Shivaratri",
+    "religion": "Hindu",
+    "month": "February/March",
+    "description": "Great night of Lord Shiva. Fasting, night vigil, and abhishekam at Shiva temples.",
+    "temples": ["varanasi-kashi", "somnath"],
+    "rituals": ["Abhishekam", "Bilva Archana", "All-night vigil", "Maha Mrityunjaya Mantra"]
+  },
+  {
+    "id": "diwali",
+    "name": "Diwali",
+    "religion": "Hindu",
+    "month": "October/November",
+    "description": "Festival of lights; Lakshmi and Ganesha worship. Celebrated across religions.",
+    "temples": ["tirupati", "varanasi-kashi", "golden-temple"],
+    "rituals": ["Lakshmi Puja", "Deepavali lights", "Sweets and fireworks"]
+  },
+  {
+    "id": "navaratri",
+    "name": "Navaratri",
+    "religion": "Hindu",
+    "month": "September/October",
+    "description": "Nine nights of Goddess worship.",
+    "temples": ["meenakshi-madurai"],
+    "rituals": ["Golu", "Garba", "Durga Puja", "Vijayadashami"]
+  },
+  {
+    "id": "eid-ul-fitr",
+    "name": "Eid-ul-Fitr",
+    "religion": "Islam",
+    "month": "Varies (end of Ramadan)",
+    "description": "Celebration marking the end of Ramadan fasting. Special prayers, feasts, and charity.",
+    "temples": ["jama-masjid-delhi", "haji-ali"],
+    "rituals": ["Eid Namaz", "Zakat al-Fitr (charity)", "Community feast", "Exchange of greetings"]
+  },
+  {
+    "id": "eid-ul-adha",
+    "name": "Eid-ul-Adha",
+    "religion": "Islam",
+    "month": "Varies (10th Dhul Hijjah)",
+    "description": "Festival of sacrifice commemorating Prophet Ibrahim's devotion.",
+    "temples": ["jama-masjid-delhi", "haji-ali"],
+    "rituals": ["Eid Namaz", "Qurbani (sacrifice)", "Distribution of meat", "Community prayers"]
+  },
+  {
+    "id": "christmas",
+    "name": "Christmas",
+    "religion": "Christian",
+    "month": "December",
+    "description": "Celebration of the birth of Jesus Christ. Midnight Mass, carols, and festivities.",
+    "temples": ["basilica-bom-jesus", "velankanni"],
+    "rituals": ["Midnight Mass", "Carol singing", "Nativity scene", "Gift exchange"]
+  },
+  {
+    "id": "easter",
+    "name": "Easter",
+    "religion": "Christian",
+    "month": "March/April",
+    "description": "Celebration of the resurrection of Jesus Christ.",
+    "temples": ["basilica-bom-jesus", "velankanni"],
+    "rituals": ["Good Friday service", "Easter Mass", "Procession", "Easter egg hunt"]
+  },
+  {
+    "id": "vaisakhi",
+    "name": "Vaisakhi",
+    "religion": "Sikh",
+    "month": "April",
+    "description": "Sikh New Year and harvest festival. Celebrates the founding of the Khalsa.",
+    "temples": ["golden-temple"],
+    "rituals": ["Nagarkirtan", "Langar", "Amrit Sanchar", "Kirtan"]
+  },
+  {
+    "id": "guru-nanak-jayanti",
+    "name": "Guru Nanak Jayanti",
+    "religion": "Sikh",
+    "month": "November",
+    "description": "Birthday of Guru Nanak Dev Ji, the founder of Sikhism.",
+    "temples": ["golden-temple"],
+    "rituals": ["Prabhat Pheri", "Akhand Path", "Langar", "Kirtan Darbar"]
+  },
+  {
+    "id": "buddha-purnima",
+    "name": "Buddha Purnima (Vesak)",
+    "religion": "Buddhist",
+    "month": "April/May",
+    "description": "Celebrates the birth, enlightenment, and death of Lord Buddha.",
+    "temples": ["mahabodhi"],
+    "rituals": ["Meditation", "Chanting", "Offering flowers", "Circumambulation of Bodhi tree"]
+  },
+  {
+    "id": "mahavir-jayanti",
+    "name": "Mahavir Jayanti",
+    "religion": "Jain",
+    "month": "March/April",
+    "description": "Birth anniversary of Lord Mahavira, the 24th Tirthankara.",
+    "temples": ["dilwara-jain"],
+    "rituals": ["Abhishek", "Procession (Rath Yatra)", "Sermons", "Charity"]
+  },
+  {
+    "id": "rath-yatra",
+    "name": "Rath Yatra",
+    "religion": "Hindu",
+    "month": "June/July",
+    "description": "Chariot festival of Lord Jagannath at Puri.",
+    "temples": ["jagannath-puri"],
+    "rituals": ["Chariot pulling", "Gundicha Yatra", "Bahuda Yatra"]
+  }
+]
